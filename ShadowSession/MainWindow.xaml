@@ -1,0 +1,209 @@
+﻿<mah:MetroWindow x:Class="ShadowSession.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ShadowSession"
+        xmlns:viewModels="clr-namespace:ShadowSession.ViewModels"
+        xmlns:views="clr-namespace:ShadowSession.Views"
+        xmlns:properties="clr-namespace:ShadowSession.Properties"
+        xmlns:converters="clr-namespace:ShadowSession.Converters"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        TitleCharacterCasing="Normal"
+        d:Width="1280" 
+        d:Height="720" 
+        d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:BitmapToImageSourceConverter x:Key="bitmapToImageSourceConverter" />
+            <converters:TimeSpanToStringConverter x:Key="timeSpanToStringConverter" />
+
+            <Style x:Key="MenuItem" TargetType="{x:Type Button}">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontWeight" Value="SemiBold" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Foreground" Value="White" />
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+                <Setter Property="MinWidth" Value="180" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border Background="{TemplateBinding Background}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Accent3}"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.ThemeBackground}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="{DynamicResource MahApps.Brushes.Accent}" Height="50">
+                <Grid>
+                </Grid>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                <Image Grid.Column="0" Width="240" Margin="0,0,20,0" VerticalAlignment="Center" Source="{Binding Source={x:Static properties:Resources.AppLogo}, Converter={StaticResource bitmapToImageSourceConverter}}"/>
+
+                <Button Grid.Column="1" Style="{StaticResource MenuItem}" 
+                        Command="{Binding SetActiveViewTypeCommand}" 
+                        CommandParameter="{x:Type views:OverviewPage}" 
+                        Content="Dashboard" />
+
+                    <Button Grid.Column="2" Style="{StaticResource MenuItem}" 
+                        Command="{Binding SetActiveViewTypeCommand}" 
+                        CommandParameter="{x:Type views:ProgramsPage}" 
+                        Content="Tracked Programs" />
+
+                    <Button Grid.Column="3" Style="{StaticResource MenuItem}"
+                        Content="Sessions"
+                        Command="{Binding SetActiveViewTypeCommand}"
+                        CommandParameter="{x:Type views:SessionsPage}"/>
+
+                    <Button Grid.Column="4" Style="{StaticResource MenuItem}" 
+                        Command="{Binding SetActiveViewTypeCommand}" 
+                        CommandParameter="{x:Type views:ExecutablesPage}" 
+                        Content="Detected Programs" />
+
+                    <Button Grid.Column="5" Style="{StaticResource MenuItem}" 
+                        Command="{Binding SetActiveViewTypeCommand}" 
+                        CommandParameter="{x:Type views:SettingsPage}" 
+                        Content="Settings" />
+
+                    <Button Grid.Column="7" Style="{StaticResource MenuItem}" 
+                        Command="{Binding SetActiveViewTypeCommand}" 
+                        CommandParameter="{x:Type views:GuidePage}" 
+                        Content="Guide" />
+
+                    <Button Grid.Column="8" Style="{StaticResource MenuItem}" 
+                        Command="{Binding SetActiveViewTypeCommand}" 
+                        CommandParameter="{x:Type views:AboutPage}" 
+                        Content="About" />
+                </Grid>
+
+        </Grid>
+
+        <ContentControl Grid.Row="1" Margin="15" Content="{Binding ActiveView}"></ContentControl>
+
+        <StatusBar Grid.Row="2" HorizontalAlignment="Stretch">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="25" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="25" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="25" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="25" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="25" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+
+            <Separator Grid.Column="0" Visibility="Hidden"/>
+
+            <StatusBarItem Grid.Column="1">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Tracked Programs:"/>
+                    <Label Content="{Binding TotalProgramCount}" />
+                </StackPanel>
+            </StatusBarItem>
+
+            <Separator Grid.Column="2" Visibility="Hidden" />
+
+            <StatusBarItem Grid.Column="3">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Session count:"/>
+                    <Label Content="{Binding TotalSessionCount}"/>
+                </StackPanel>
+            </StatusBarItem>
+
+            <Separator Grid.Column="4" Visibility="Hidden" />
+
+            <StatusBarItem Grid.Column="5">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Avg. sessions/program:"/>
+                    <Label Content="{Binding AverageSessionsPerProgram}"/>
+                </StackPanel>
+            </StatusBarItem>
+
+            <Separator Grid.Column="6" Visibility="Hidden" />
+
+            <StatusBarItem Grid.Column="7">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Total duration:"/>
+                    <Label Content="{Binding TotalSessionDuration, Converter={StaticResource timeSpanToStringConverter}}"/>
+                </StackPanel>
+            </StatusBarItem>
+
+            <Separator Grid.Column="8" Visibility="Hidden" />
+
+            <StatusBarItem Grid.Column="9">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Total duration:"/>
+                    <Label Content="{Binding TotalSessionDuration, Converter={StaticResource timeSpanToStringConverter}}"/>
+                </StackPanel>
+            </StatusBarItem>
+
+            <Separator Grid.Column="10" Visibility="Hidden" />
+
+            <StatusBarItem Grid.Column="11">
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Last 2 Weeks:"/>
+                    <Label Content="{Binding LastTwoWeeksSessionDuration, Converter={StaticResource timeSpanToStringConverter}}"/>
+                </StackPanel>
+            </StatusBarItem>
+
+            <Separator Grid.Column="12" Visibility="Hidden" />
+        </StatusBar>
+
+
+    </Grid>
+</mah:MetroWindow>

@@ -1,0 +1,39 @@
+﻿<mah:MetroWindow x:Class="ShadowSession.Views.ConfirmationDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:viewModels="clr-namespace:ShadowSession.ViewModels"
+        mc:Ignorable="d"
+        Height="300" 
+        Width="500"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        IsWindowDraggable="False"
+        Title="{Binding Title}"
+        ShowIconOnTitleBar="False"
+        IsMinButtonEnabled="False"
+        IsMaxRestoreButtonEnabled="False"
+        IsCloseButtonEnabled="False"
+        d:DataContext="{d:DesignInstance viewModels:ConfirmationDialogViewModel, IsDesignTimeCreatable=False}">
+
+    <Grid HorizontalAlignment="Center" Margin="15" Width="Auto">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Margin="5" Grid.Row="1" Grid.Column="0" TextWrapping="WrapWithOverflow" Text="{Binding Text}" TextAlignment="Left" VerticalAlignment="Center" HorizontalAlignment="Center" />
+    
+        <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+            <Button Content="_Yes" Command="{Binding ConfirmCommand}"  Width="80" Margin="0,0,10,0" />
+            <Button Content="_No"  Command="{Binding CancelCommand}" Width="80" />
+        </StackPanel>
+    </Grid>
+</mah:MetroWindow>

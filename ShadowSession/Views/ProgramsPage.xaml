@@ -1,0 +1,244 @@
+﻿<UserControl x:Class="ShadowSession.Views.ProgramsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ShadowSession.Views"
+             xmlns:viewModels="clr-namespace:ShadowSession.ViewModels"
+             xmlns:converters="clr-namespace:ShadowSession.Converters"
+             xmlns:liveCharts="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="720" 
+             d:DesignWidth="1280"
+             x:Name="root"
+             d:DataContext="{d:DesignInstance viewModels:ProgramsPageViewModel, IsDesignTimeCreatable=False}">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+            <converters:BooleanToYesNoConverter x:Key="booleanToYesNoConverter" />
+            <converters:TimeSpanToStringConverter x:Key="timeSpanToStringConverter" />
+            <converters:NullValueDisplayConverter x:Key="nullValueDisplayConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Button Grid.Column="0" Grid.Row="0" Content="_Refresh" 
+                ToolTip="Refreshes tracked programs from the database"
+                Command="{Binding RefreshProgramsCommand}" 
+                Width="80" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,0,10" />
+
+        <Grid Grid.Column="0" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="490" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Grid.Column="0" Grid.Row="0" Header="Programs">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10">
+                        <TextBox Text="{Binding ProgramsSearchText, UpdateSourceTrigger=PropertyChanged}" Keyboard.KeyDown="OnProgramsSearchTextKeyDown" HorizontalAlignment="Left" Width="300" Margin="0,0,10,0"/>
+                        <Button Content="Search" Command="{Binding SearchProgramsCommand}" Width="80" Margin="0,0,10,0" />
+                        <Button Content="Clear" Command="{Binding ResetProgramsSearchTextCommand}" Width="80" />
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" SelectionMode="Single" ItemsSource="{Binding Programs}" MouseUp="OnProgramsDataGridMouseUp" SelectedItem="{Binding SelectedProgram}"
+                        ScrollViewer.CanContentScroll="True"
+                        AutoGenerateColumns="False" 
+                        CanUserAddRows="False" 
+                        CanUserDeleteRows="False" 
+                        CanUserReorderColumns="False" 
+                        CanUserResizeColumns="False" 
+                        CanUserResizeRows="False" 
+                        CanUserSortColumns="True"  
+                        IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" />
+                            <DataGridTextColumn Header="Total Sessions" Width="110" Binding="{Binding TotalSessionCount}" />
+                            <DataGridTextColumn Header="Auto Record" Width="100" Binding="{Binding AutomaticRecordingEnabled, Converter={StaticResource booleanToYesNoConverter}}" />
+                            <DataGridTemplateColumn CanUserSort="False" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Width="60" Content="Remove" ToolTip="Removes the game from tracking (confirmation required)" Click="OnRemoveButtonClick" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+
+            </GroupBox>
+
+            <Grid Grid.Column="2" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition Height="2.4*" />
+                </Grid.RowDefinitions>
+
+                <GroupBox Grid.Column="0" Grid.Row="0" Header="Program Details">
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Column="0" Grid.Row="0" Content="Display Name:" VerticalContentAlignment="Center" />
+                        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Content="{Binding SelectedProgram.DisplayName}" Margin="0,0,10,0" />
+                            <Button Content="Rename" 
+                                   ToolTip="Change the program's name. Affects recording directory and file names."
+                                   Click="OnRenameButtonClick"
+                                   Visibility="{Binding IsProgramSelected, Converter={StaticResource booleanToVisibilityConverter}}" 
+                                   Width="60" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                        </StackPanel>
+
+
+                        <Label Grid.Column="0" Grid.Row="1" Content="Filename:" VerticalContentAlignment="Center" />
+                        <Label Grid.Column="1" Grid.Row="1" Content="{Binding SelectedProgram.Filename}" />
+
+                        <Label Grid.Column="0" Grid.Row="2" Content="Path:" VerticalContentAlignment="Center" />
+                        <ScrollViewer ToolTip="{Binding SelectedProgram.Path}" Grid.Column="1" Grid.Row="2" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Hidden"> 
+                            <Label Content="{Binding SelectedProgram.Path}" />
+                        </ScrollViewer>
+
+                        <Label Grid.Column="0" Grid.Row="3" Content="Automatic Recording Allowed:" VerticalContentAlignment="Center" />
+                        <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Content="{Binding SelectedProgram.AutomaticRecordingEnabled, Converter={StaticResource booleanToYesNoConverter}}" Margin="0,0,10,0" />
+                            <Button Content="Toggle" ToolTip="Active sessions for this program will either start or stop recording based on this value. If automatic recording is disabled globally, this value is ignored." 
+                                Width="50"  VerticalAlignment="Center"  HorizontalAlignment="Left" 
+                                Command="{Binding ToggleProgramAllowRecordingCommand}" 
+                                Visibility="{Binding IsProgramSelected, Converter={StaticResource booleanToVisibilityConverter}}" />
+                        </StackPanel>
+
+                        <Label Grid.Column="0" Grid.Row="4" Content="Recording Framerate:" VerticalContentAlignment="Center" />
+                        <StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Label Content="{Binding SelectedProgram.RecordingFramerate, Converter={StaticResource nullValueDisplayConverter}}" Margin="0,0,10,0" />
+
+                            <Button Content="Edit" ToolTip="Change the program-specific recording framerate (FPS)." 
+                                    Width="50" Margin="0,0,2.5,0"
+                                    Click="OnChangeRecordingFramerateButtonClick" />
+                            <Button Content="Clear" ToolTip="Use the default recording framerate (FPS)." 
+                                    Width="50" 
+                                    Command="{Binding ClearProgramRecordingFramerateCommand}"  />
+                        </StackPanel>
+
+                        <Label Grid.Column="0" Grid.Row="5" Content="Recording Bitrate:" VerticalContentAlignment="Center" />
+                        <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left"   Visibility="{Binding IsProgramSelected, Converter={StaticResource booleanToVisibilityConverter}}">
+                            <Label Content="{Binding SelectedProgram.RecordingBitrate, Converter={StaticResource nullValueDisplayConverter}}" Margin="0,0,10,0"/>
+
+                            <Button Content="Edit" ToolTip="Change the program-specific recording bitrate (quality in Mbps)." 
+                                Width="50" Margin="0,0,2.5,0"
+                                Click="OnChangeRecordingBitrateButtonClick" />
+                            <Button Content="Clear" ToolTip="Use the default recording bitrate (quality in Mbps)." 
+                                Width="50" 
+                                Command="{Binding ClearProgramRecordingBitrateCommand}" />
+                        </StackPanel>
+
+                        <Button Grid.Column="0" Grid.Row="6" Content="Open Recordings Folder" ToolTip="Opens the program's recording directory in a new window."
+                                Width="170"  VerticalAlignment="Center"  
+                                Command="{Binding OpenProgramRecordingsDirectoryCommand}"
+                                Visibility="{Binding IsProgramSelected, Converter={StaticResource booleanToVisibilityConverter}}" />
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Grid.Column="2" Grid.Row="0" Header="Sessions Summary">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Grid.Column="0" Grid.Row="0" Content="Session Count:" VerticalContentAlignment="Center" />
+                        <Label Grid.Column="1" Grid.Row="0" Content="{Binding SelectedProgram.TotalSessionCount}" VerticalContentAlignment="Center" />
+
+                        <Label Grid.Column="0" Grid.Row="1" Content="Sessions Duration:" VerticalContentAlignment="Center" />
+                        <Label Grid.Column="1" Grid.Row="1" Content="{Binding SelectedProgram.TotalSessionDuration, Converter={StaticResource timeSpanToStringConverter}}" VerticalContentAlignment="Center" />
+
+                        <Label Grid.Column="0" Grid.Row="2" Content="Last 2 Weeks:" VerticalContentAlignment="Center" />
+                        <Label Grid.Column="1" Grid.Row="2" Content="{Binding SelectedProgram.LastTwoWeeksSessionDuration, Converter={StaticResource timeSpanToStringConverter}}" VerticalContentAlignment="Center" />
+
+                        <Label Grid.Column="0" Grid.Row="3" Content="Average:" VerticalContentAlignment="Center" />
+                        <Label Grid.Column="1" Grid.Row="3" Content="{Binding SelectedProgram.AverageSessionDuration, Converter={StaticResource timeSpanToStringConverter}}" VerticalContentAlignment="Center" />
+
+                        <Label Grid.Column="0" Grid.Row="4" Content="First Session Date:" VerticalContentAlignment="Center" />
+                        <Label Grid.Column="1" Grid.Row="4" Content="{Binding SelectedProgram.FirstSessionDate}" VerticalContentAlignment="Center" />
+
+                        <Label Grid.Column="0" Grid.Row="5" Content="Last Session Date:"  VerticalContentAlignment="Center"/>
+                        <Label Grid.Column="1" Grid.Row="5" Content="{Binding SelectedProgram.LastSessionDate}" VerticalContentAlignment="Center" />
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Grid.ColumnSpan="3" Grid.Row="2" Header="Sessions Breakdown">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Column="0" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                <Label Content="Time spent in this program" HorizontalAlignment="Center" />
+                                <liveCharts:PieChart Width="150" Height="150" Series="{Binding ProgramTotalSessionHoursSeries}" MinValue="0" MaxValue="100" InitialRotation="-90" />
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                                <Label Content="Sessions recorded" HorizontalAlignment="Center" />
+                                <liveCharts:PieChart Width="150" Height="150" Series="{Binding ProgramRecordedSessionSeries}"  MinValue="0" MaxValue="100" InitialRotation="-90" />
+                            </StackPanel>
+                        </StackPanel>
+                  
+                        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Center">
+                            <Label Content="Session duration over time (in hours)" HorizontalAlignment="Center" />
+                            <liveCharts:CartesianChart Foreground="{Binding ForegroundBrush}" LegendTextPaint="{Binding ForegroundPaint}"  LegendPosition="Left" LegendTextSize="12" Width="Auto" Height="350" 
+                                Series="{Binding ProgramSessionHoursOverTimeSeries}" 
+                                XAxes="{Binding ProgramSessionHoursOverTimeXAxes}" 
+                                YAxes="{Binding ProgramSessionHoursOverTimeYAxes}">
+                            </liveCharts:CartesianChart>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

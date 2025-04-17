@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="ShadowSession.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ShadowSession.Views"
+             xmlns:viewModels="clr-namespace:ShadowSession.ViewModels"
+             xmlns:converters="clr-namespace:ShadowSession.Converters"
+             mc:Ignorable="d" 
+             x:Name="root"
+             d:DesignHeight="720" 
+             d:DesignWidth="1280"
+             d:Background="White"
+             d:DataContext="{d:DesignInstance viewModels:SettingsPageViewModel, IsDesignTimeCreatable=False}">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Button Grid.Column="0" Grid.Row="0" Content="_Refresh" 
+                ToolTip="Refreshes configurable settings from the database"
+                Command="{Binding RefreshUserSettingsCommand}"
+                HorizontalAlignment="Right" VerticalAlignment="Center" Width="80" Margin="0,0,0,10"  />
+
+        <GroupBox Grid.Column="0" Grid.Row="1" Header="Settings">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0"  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,10">
+                    <TextBox Text="{Binding UserSettingsSearchText, UpdateSourceTrigger=PropertyChanged}" Keyboard.KeyDown="OnUserSettingsSearchTextKeyDown" HorizontalAlignment="Left" Width="300" Margin="0,0,10,0"/>
+                    <Button Content="Search" Command="{Binding SearchUserSettingsCommand}" Width="80" Margin="0,0,10,0" />
+                    <Button Content="Clear" Command="{Binding ResetUserSettingsSearchTextCommand}" Width="80" />
+                </StackPanel>
+
+                <DataGrid Grid.Column="0" Grid.Row="1" ItemsSource="{Binding UserSettings}" SelectedItem="{Binding SelectedUserSetting}" ScrollViewer.CanContentScroll="True" 
+                        AutoGenerateColumns="False" 
+                        CanUserAddRows="False" 
+                        CanUserDeleteRows="False" 
+                        CanUserReorderColumns="False" 
+                        CanUserResizeColumns="False" 
+                        CanUserResizeRows="False" 
+                        CanUserSortColumns="True"
+                        IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Width="1*" Header="Name" Binding="{Binding DisplayName}" />
+                        <DataGridTextColumn Width="2*" Header="Description" Binding="{Binding Description}" />
+                        <DataGridTextColumn Width="3*" Header="Default Value" Binding="{Binding DefaultValue}"/>
+                        <DataGridTextColumn Width="3*" Header="Current Value" Binding="{Binding Value}" />
+                        <DataGridTemplateColumn Width="1*" Header="" CanUserSort="False">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <Button Content="Edit" Width="50" Margin="0,0,2.5,0"
+                                                ToolTip="If the settings is a true/false, toggles the current value. Otherwise, opens a window to modify the current value."
+                                                Click="OnModifyValueButtonClick"/>
+                                        <Button Content="Reset" Width="50" 
+                                                ToolTip="Resets the current value to the default value"
+                                                Command="{Binding DataContext.ResetUserSettingValueCommand, ElementName=root}"/>
+                                   
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</UserControl>
